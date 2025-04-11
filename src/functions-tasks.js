@@ -18,7 +18,7 @@
  *
  */
 function getCurrentFunctionName() {
-  throw new Error('Not implemented');
+  return getCurrentFunctionName.name;
 }
 
 /**
@@ -32,8 +32,11 @@ function getCurrentFunctionName() {
  *   getFunctionBody(hiHello) => "function hiHello() { console.log('hello world'); }"
  *
  */
-function getFunctionBody(/* func */) {
-  throw new Error('Not implemented');
+function getFunctionBody(func) {
+  if (typeof func !== 'function') {
+    return '';
+  }
+  return func.toString();
 }
 
 /**
@@ -50,8 +53,12 @@ function getFunctionBody(/* func */) {
  *  ]) => [0, 1, 2]
  *
  */
-function getArgumentsCount(/* funcs */) {
-  throw new Error('Not implemented');
+function getArgumentsCount(funcs) {
+  const result = [];
+  funcs.forEach((func) => {
+    result.push(func.length);
+  });
+  return result;
 }
 
 /**
@@ -70,8 +77,8 @@ function getArgumentsCount(/* funcs */) {
  *   power05(16) => 4
  *
  */
-function getPowerFunction(/* exponent */) {
-  throw new Error('Not implemented');
+function getPowerFunction(exponent) {
+  return (number) => number ** exponent;
 }
 
 /**
@@ -87,8 +94,25 @@ function getPowerFunction(/* exponent */) {
  *   getPolynom(8)     => y = 8
  *   getPolynom()      => null
  */
-function getPolynom() {
-  throw new Error('Not implemented');
+function getPolynom(...args) {
+  if (args.length === 0) return () => null;
+  if (args.length === 1) return () => args[0];
+  const copiedArgs = args;
+  const calculatePart = (coefficients, indeterminate, position) => {
+    return coefficients * indeterminate ** position;
+  };
+  const getExpression = (indeterminate) => {
+    let result = null;
+    copiedArgs.forEach((arg, index) => {
+      result += calculatePart(
+        arg,
+        indeterminate,
+        copiedArgs.length - 1 - index
+      );
+    });
+    return result;
+  };
+  return getExpression;
 }
 
 /**
@@ -105,8 +129,16 @@ function getPolynom() {
  *   ...
  *   memoizer() => the same random number  (next run, returns the previous cached result)
  */
-function memoize(/* func */) {
-  throw new Error('Not implemented');
+function memoize(func) {
+  let cashe;
+  let isCashed = false;
+  return () => {
+    if (!isCashed) {
+      cashe = func();
+      isCashed = true;
+    }
+    return cashe;
+  };
 }
 
 /**
