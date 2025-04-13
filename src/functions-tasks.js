@@ -156,8 +156,21 @@ function memoize(func) {
  * }, 2);
  * retryer() => 2
  */
-function retry(/* func, attempts */) {
-  throw new Error('Not implemented');
+function retry(func, attempts) {
+  const reRun = () => {
+    let result;
+    for (let i = 0; i < attempts; i += 1) {
+      try {
+        result = func();
+      } catch (error) {
+        if (i === attempts - 1) {
+          throw error;
+        }
+      }
+    }
+    return result;
+  };
+  return reRun;
 }
 
 /**
@@ -183,8 +196,15 @@ function retry(/* func, attempts */) {
  * cos(3.141592653589793) ends
  *
  */
-function logger(/* func, logFunc */) {
-  throw new Error('Not implemented');
+function logger(func, logFunc) {
+  return (...args) => {
+    const funcName = func.name;
+    const argsString = args.join(', ');
+    logFunc(`${funcName}(${argsString}) starts`);
+    const result = func(...args);
+    logFunc(`${funcName}(${argsString}) ends`);
+    return result;
+  };
 }
 
 /**
@@ -200,8 +220,17 @@ function logger(/* func, logFunc */) {
  *   partialUsingArguments(fn, 'a','b','c')('d') => 'abcd'
  *   partialUsingArguments(fn, 'a','b','c','d')() => 'abcd'
  */
-function partialUsingArguments(/* fn, ...args1 */) {
-  throw new Error('Not implemented');
+function partialUsingArguments(fn, ...args1) {
+  const curry = (...args) => {
+    return (...nextArgs) => {
+      const allArgs = [...args, ...nextArgs];
+      if (allArgs.length >= fn.length) {
+        return fn(...allArgs);
+      }
+      return curry(allArgs);
+    };
+  };
+  return curry(...args1);
 }
 
 /**
@@ -221,8 +250,16 @@ function partialUsingArguments(/* fn, ...args1 */) {
  *   getId4() => 7
  *   getId10() => 11
  */
-function getIdGeneratorFunction(/* startFrom */) {
-  throw new Error('Not implemented');
+function getIdGeneratorFunction(startFrom) {
+  let currentId = null;
+  return () => {
+    if (currentId === null) {
+      currentId = startFrom;
+      return currentId;
+    }
+    currentId += 1;
+    return currentId;
+  };
 }
 
 module.exports = {
